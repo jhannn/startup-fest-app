@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
-import {createStackNavigator, createAppContainer} from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import HomeScreen from './conteiners/HomeScreen';
 import StartupScreen from './conteiners/StartupScreen';
@@ -10,11 +10,11 @@ const AppStackNavigator = createStackNavigator({
     Home: HomeScreen,
     Startup: StartupScreen,
     Ranking: RankingScreen
-},{
-    navigationOptions:{
-        headerTitle: 'The Startup Fest'
-    }
-})
+}, {
+        navigationOptions: {
+            headerTitle: 'The Startup Fest'
+        }
+    })
 
 const Main = createAppContainer(AppStackNavigator);
 

@@ -1,9 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, ScrollView, Button, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { graphql, Query } from 'react-apollo';
 import gql from 'graphql-tag';
-
-import Startup from '../components/Startup';
 
 const ALLSTARTUPS_QUERY = gql`
 query GetAllStartups {
@@ -23,29 +21,67 @@ query GetAllStartups {
 `;
 
 export default class HomeScreen extends Component {
-  
-  static navigationOptions ={
-    title: 'Escolha sua Startup!'
+
+  constructor(props) {
+    super(props);
+
+    /*realm = new Realm({
+      path: 'UserDatabase.realm',
+      schema: [
+        {
+          name: 'user_details',
+          properties: {
+            user_id: { type: 'int', default: 0 },
+            user_name: 'string',
+            user_contact: 'string',
+            user_address: 'string',
+          },
+        },
+      ],
+    });*/
   }
 
-  renderStartup(name, image, description){
-    this.props.navigation.navigate('StartupScreen', { name: name, image: image, description: description});
+  feedData = (data) => {
+    let allStartups = [];
+    data.allStartups.map((startup) => {
+      if (startup) {
+        allStartups.push(startup);
+      }
+    })
+    return allStartups;
+  }
+
+  static navigationOptions = {
+    title: 'Escolha sua Startup!'
   }
 
   render() {
     return (
       <View>
+        <ScrollView>
+          <Query query={ALLSTARTUPS_QUERY}>
+            {({ data, error, loading }) => {
+              if (error || loading) {
+                return <ActivityIndicator size="large" color="#0000ff" />;
+              }
+              console.log(data.allStartups);
+              let allStartups = this.feedData(data);
+              return allStartups.map(startup => (
+                <View key={startup.segment_id}>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('Startup', { startup: startup })}>
+                    <Image
+                      source={{ uri: startup.imageUrl }}
+                      style={{ width: 50, height: 50 }}
+                    />
+                    <Text>{startup.name}</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            }}
+          </Query>
+        </ScrollView>
         <Button title="Ranking" onPress={() => this.props.navigation.navigate('Ranking')
-        }/>
-        <Query query={ALLSTARTUPS_QUERY}>
-          {({data, error, loading})=>{
-            if (error || loading) {
-              return <ActivityIndicator size="large" color="#0000ff" />;
-            }
-            console.log(data.allStartups);
-            return data.allStartups.map((startup => (<Startup key={startup.segment_id.toString()} keyval={startup.segment_id} imageUrl={startup.imageUrl} name={startup.name} renderStartup={() => this.renderStartup(startup.name, startup.image, startup.description, startup.segment_id)}/>))
-            )}}
-        </Query>
+        } />
       </View>
     );
   }

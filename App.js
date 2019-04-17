@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ApolloClient from 'apollo-client';
 import { HttpLink, InMemoryCache } from 'apollo-client-preset';
 import { ApolloProvider } from 'react-apollo';
