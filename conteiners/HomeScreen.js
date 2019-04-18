@@ -22,34 +22,11 @@ query GetAllStartups {
 
 export default class HomeScreen extends Component {
 
-  constructor(props) {
-    super(props);
-
-    /*realm = new Realm({
-      path: 'UserDatabase.realm',
-      schema: [
-        {
-          name: 'user_details',
-          properties: {
-            user_id: { type: 'int', default: 0 },
-            user_name: 'string',
-            user_contact: 'string',
-            user_address: 'string',
-          },
-        },
-      ],
-    });*/
-  }
-
-  feedData = (data) => {
-    let allStartups = [];
-    data.allStartups.map((startup) => {
-      if (startup) {
-        allStartups.push(startup);
-      }
-    })
-    return allStartups;
-  }
+  componentDidMount(){
+    console.log('====================================');
+    console.log("começou");
+    console.log('====================================');
+  } 
 
   static navigationOptions = {
     title: 'Escolha sua Startup!'
@@ -64,9 +41,7 @@ export default class HomeScreen extends Component {
               if (error || loading) {
                 return <ActivityIndicator size="large" color="#0000ff" />;
               }
-              console.log(data.allStartups);
-              let allStartups = this.feedData(data);
-              return allStartups.map(startup => (
+              return data.allStartups.map(startup => (
                 <View key={startup.segment_id}>
                   <TouchableOpacity onPress={() => this.props.navigation.navigate('Startup', { startup: startup })}>
                     <Image
