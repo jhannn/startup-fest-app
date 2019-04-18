@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, ScrollView, Button, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
-import { graphql, Query } from 'react-apollo';
+import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
 const ALLSTARTUPS_QUERY = gql`
@@ -21,12 +21,9 @@ query GetAllStartups {
 `;
 
 export default class HomeScreen extends Component {
-
-  componentDidMount(){
-    console.log('====================================');
-    console.log("começou");
-    console.log('====================================');
-  } 
+  constructor(props) {
+    super(props);
+  }
 
   static navigationOptions = {
     title: 'Escolha sua Startup!'

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, ScrollView, Button, ActivityIndicator } from 'react-native';
-import { db } from '../src/config';
+import { db } from './config';
 import StartupRanking from './StartupRanking';
 
 export default class RankingScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      allStartups: [],
       startupRankingProposal: [],
       startupRankingPitch: [],
       startupRankingDevelop: [],
@@ -15,56 +16,45 @@ export default class RankingScreen extends Component {
   }
 
   componentDidMount() {
-    console.log('====================================');
-    console.log("Ranking");
-    console.log('====================================');
-    db.ref('votes').on('value', (data) => {
-      return this.sortStartups(data);
-    });
+    db.ref('startup').on('value', (snapshot) => {
+      let allstartups = [];
+      snapshot.forEach((doc) => {
+        let data = doc.val();
+        allstartups.push(data);
+      })
+      this.setState({ allStartups: allstartups });
+      return this.sortStartups(allstartups);
+    })
   }
 
   sortStartups(data) {
     let startupsStorage = [];
-    let value = 0;
-    let reducer = (accumulator, currentValue) => accumulator + currentValue;
-    console.log("ooooooooooooooooooooooooooiiiiiiiiiiiiiiiaaaaaaaaaaaaa");
-    data.map(startup => {
-      if(startupsStorage.length > 0) value = startupsStorage[idStartup].indexOf(startup.idStartup); else value=-1;
-      console.log('pasoooooooooooooooooooooooou')
-      if (value == -1) {
-        startupsStorage.push({
-          idStartup: startup.idStartup,
-          nameStartup: startup.nameStartup,
-          imageUrl: startup.imageUrl,
-          votesProposal: [startup.ratingProposal],
-          votesPitch: [startup.ratingPitch],
-          votesDevelop: [startup.ratingtDevelop],
-          ratingProposal: startup.ratingProposal,
-          ratingPitch: startup.ratingPitch,
-          ratingtDevelop: startup.ratingtDevelop,
-          voteCount: 1
-        })
-      } else {
-        startupsStorage[value].votesProposal.push(startup.ratingProposal);
-        startupsStorage[value].votesPitch.push(startup.ratingPitch);
-        startupsStorage[value].votesDevelop.push(startup.ratingtDevelop);
-        startupsStorage[value].voteCount = ++startupsStorage[value].voteCount;
-        startupsStorage[value].ratingProposal = startupsStorage[value].votesProposal.reduce(reducer) / startupsStorage[value].voteCount;
-        startupsStorage[value].ratingPitch = startupsStorage[value].votesPitch.reduce(reducer) / startupsStorage[value].voteCount;
-        startupsStorage[value].ratingtDevelop = startupsStorage[value].votesDevelop.reduce(reducer) / startupsStorage[value].voteCount;
-      }
-    })
-    this.setState({
-      startupRankingProposal: startupsStorage.sort((a, b) => {
-        return (a.ratingProposal < b.ratingProposal);
-      }),
-      startupRankingPitch: startupsStorage.sort((a, b) => {
-        return (a.ratingPitch < b.ratingPitch);
-      }),
-      startupRankingDevelop: startupsStorage.sort((a, b) => {
-        return (a.ratingtDevelop < b.ratingtDevelop);
-      }), loading: false
-    })
+    let startupsProposal = [];
+    let startupsPitch = [];
+    let startupsDevelop = [];
+    if (this.state.allStartups.length > 0) {
+      data.forEach((startup) => {
+        startup.rakingProposal = startup.ratingProposal / startup.countVotes;
+        startup.rakingPitch = startup.ratingPitch / startup.countVotes;
+        startup.rakingDevelop = startup.ratingDevelop / startup.countVotes;
+        startupsStorage.push(startup);
+      })
+      startupsProposal = startupsStorage.sort((a, b) => {
+        return (a.rakingProposal < b.rakingProposal)
+      })
+      startupsPitch = startupsStorage.sort((a, b) => {
+        return (a.rakingPitch < b.rakingPitch)
+      })
+      startupsDevelop = startupsStorage.sort((a, b) => {
+        return (a.rakingDevelop < b.rakingDevelop)
+      })
+      this.setState({
+        startupRankingProposal: startupsProposal.slice(0, 3),
+        startupRankingPitch: startupsPitch.slice(0, 3),
+        startupRankingDevelop: startupsDevelop.slice(0, 3)
+      })
+    }
+    this.setState({ loading: false })
   }
 
   static navigationOptions = {
@@ -72,28 +62,47 @@ export default class RankingScreen extends Component {
   }
 
   render() {
-    let resultProposal;
+    let resultProposal = {};
+    let resultPitch = {};
+    let resultDevelop = {};
     if (this.state.startupRankingProposal.length > 0) {
-      console.log('chuuuuuuuuuuuuuuuuuuuuuupaaaaaaaaaaaaaaa');
-      resultProposal = this.state.startupRankingProposal.map((val) => {
-        return <StartupRanking key={val.idStartup} keyval={val.idStartup} name={val.nameStartup} imageUrl={val.imageUrl} starRating={val.ratingProposal} />
+      resultProposal = this.state.startupRankingProposal.map((startup) => {
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.ratingProposal} />
+      })
+      resultPitch = this.state.startupRankingPitch.map((startup) => {
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.ratingPitch} />
+      })
+      resultDevelop = this.state.startupRankingDevelop.map((startup) => {
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.ratingDevelop} />
       })
     } else if (this.state.startupRankingProposal.length == 0 && this.state.loading == false) {
       resultProposal = <Text> Não existe votação confirmada para Proposta!</Text>
+      resultPitch = <Text> Não existe votação confirmada para Proposta!</Text>
+      resultDevelop = <Text> Não existe votação confirmada para Proposta!</Text>
     } else {
-      resultProposal = <ActivityIndicator size="large" color="#0000ff" />;
+      resultProposal = <ActivityIndicator size="small" color="#0000ff" />;
+      resultPitch = <ActivityIndicator size="small" color="#0000ff" />;
+      resultDevelop = <ActivityIndicator size="small" color="#0000ff" />;
     }
 
     return (
       <View>
-        <Text>Resultados</Text>
-        <Text>Proposta</Text>
         <ScrollView>
-        {resultProposal}
+          <Text>Resultados</Text>
+          <Text>Proposta</Text>
+          <ScrollView>
+            {resultProposal}
+          </ScrollView>
+          <Text>Apresentação / Pitch</Text>
+          <ScrollView>
+            {resultPitch}
+          </ScrollView>
+          <Text>Desenvolvimento</Text>
+          <ScrollView>
+            {resultDevelop}
+          </ScrollView>
         </ScrollView>
-        <Text>Apresentação / Pitch</Text>
-        <Text>Desenvolvimento</Text>
-        <Button title="Ranking" onPress={() => this.props.navigation.navigate('Home')} />
+        <Button title="Home" onPress={() => this.props.navigation.navigate('Home')} />
       </View>
     );
   }
