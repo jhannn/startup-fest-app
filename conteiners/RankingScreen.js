@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView, Button, ActivityIndicator } from 'react-native';
-import { db } from './config';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import StartupRanking from './StartupRanking';
+import { Container, Footer, FooterTab, Button } from 'native-base';
+import { Grid, Row } from 'react-native-easy-grid';
+import { Constants } from "expo";
 
 export default class RankingScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      allStartups: [],
       startupRankingProposal: [],
       startupRankingPitch: [],
       startupRankingDevelop: [],
@@ -15,50 +16,37 @@ export default class RankingScreen extends Component {
     }
   }
 
-  componentDidMount() {
-    db.ref('startup').on('value', (snapshot) => {
-      let allstartups = [];
-      snapshot.forEach((doc) => {
-        let data = doc.val();
-        allstartups.push(data);
-      })
-      this.setState({ allStartups: allstartups });
-      return this.sortStartups(allstartups);
-    })
+  static navigationOptions = {
+    title: 'Resultados'
+  }
+
+  componentWillMount() {
+    this.sortStartups(this.props.navigation.state.params.allstartups);
   }
 
   sortStartups(data) {
     let startupsStorage = [];
-    let startupsProposal = [];
-    let startupsPitch = [];
-    let startupsDevelop = [];
-    if (this.state.allStartups.length > 0) {
+    if (data.length > 0) {
       data.forEach((startup) => {
-        startup.rakingProposal = startup.ratingProposal / startup.countVotes;
-        startup.rakingPitch = startup.ratingPitch / startup.countVotes;
-        startup.rakingDevelop = startup.ratingDevelop / startup.countVotes;
+        startup.rankingProposal = (startup.ratingProposal / startup.countVotes);
+        startup.rankingPitch = (startup.ratingPitch / startup.countVotes);
+        startup.rankingDevelop = (startup.ratingDevelop / startup.countVotes);
         startupsStorage.push(startup);
       })
-      startupsProposal = startupsStorage.sort((a, b) => {
-        return (a.rakingProposal < b.rakingProposal)
+      startupsStorage.sort((a, b) => {
+        return (a.rankingProposal > b.rankingProposal ? -1 : a.rankingProposal < b.rankingProposal ? 1 : 0)
       })
-      startupsPitch = startupsStorage.sort((a, b) => {
-        return (a.rakingPitch < b.rakingPitch)
+      this.setState({ startupRankingProposal: startupsStorage.slice(0, 3) })
+      startupsStorage.sort((a, b) => {
+        return (a.rankingPitch > b.rankingPitch ? -1 : a.rankingPitch < b.rankingPitch ? 1 : 0)
       })
-      startupsDevelop = startupsStorage.sort((a, b) => {
-        return (a.rakingDevelop < b.rakingDevelop)
+      this.setState({ startupRankingPitch: startupsStorage.slice(0, 3) })
+      startupsStorage.sort((a, b) => {
+        return (a.rankingDevelop > b.rankingDevelop ? -1 : a.rankingDevelop < b.rankingDevelop ? 1 : 0)
       })
-      this.setState({
-        startupRankingProposal: startupsProposal.slice(0, 3),
-        startupRankingPitch: startupsPitch.slice(0, 3),
-        startupRankingDevelop: startupsDevelop.slice(0, 3)
-      })
+      this.setState({ startupRankingDevelop: startupsStorage.slice(0, 3) })
     }
-    this.setState({ loading: false })
-  }
-
-  static navigationOptions = {
-    title: 'Resultados'
+    this.setState({ loading: false });
   }
 
   render() {
@@ -67,13 +55,13 @@ export default class RankingScreen extends Component {
     let resultDevelop = {};
     if (this.state.startupRankingProposal.length > 0) {
       resultProposal = this.state.startupRankingProposal.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.ratingProposal} />
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} />
       })
       resultPitch = this.state.startupRankingPitch.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.ratingPitch} />
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} />
       })
       resultDevelop = this.state.startupRankingDevelop.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.ratingDevelop} />
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} />
       })
     } else if (this.state.startupRankingProposal.length == 0 && this.state.loading == false) {
       resultProposal = <Text> Não existe votação confirmada para Proposta!</Text>
@@ -86,24 +74,36 @@ export default class RankingScreen extends Component {
     }
 
     return (
-      <View>
-        <ScrollView>
-          <Text>Resultados</Text>
-          <Text>Proposta</Text>
-          <ScrollView>
-            {resultProposal}
-          </ScrollView>
-          <Text>Apresentação / Pitch</Text>
-          <ScrollView>
-            {resultPitch}
-          </ScrollView>
-          <Text>Desenvolvimento</Text>
-          <ScrollView>
-            {resultDevelop}
-          </ScrollView>
-        </ScrollView>
-        <Button title="Home" onPress={() => this.props.navigation.navigate('Home')} />
-      </View>
+      <Container style={{ marginTop: Constants.statusBarHeight }}>
+        <Grid style={{ alignItems: "center" }}>
+          <Row>
+            <View>
+              <ScrollView>
+                <Text>Resultados</Text>
+                <Text>Proposta</Text>
+                <ScrollView>
+                  {resultProposal}
+                </ScrollView>
+                <Text>Apresentação / Pitch</Text>
+                <ScrollView>
+                  {resultPitch}
+                </ScrollView>
+                <Text>Desenvolvimento</Text>
+                <ScrollView>
+                  {resultDevelop}
+                </ScrollView>
+              </ScrollView>
+            </View>
+          </Row>
+        </Grid>
+        <Footer>
+          <FooterTab>
+            <Button full onPress={() => this.props.navigation.navigate('Home')}>
+              <Text>Home</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
+      </Container>
     );
   }
 }

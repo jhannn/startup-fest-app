@@ -7,13 +7,18 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo/vector-icons": "^10.0.1",
     "apollo-client-preset": "^1.0.8",
+    "create-react-class": "^15.6.3",
     "expo": "^32.0.0",
     "firebase": "^5.9.4",
     "graphql": "^14.2.1",
+    "native-base": "^2.12.1",
     "react": "16.5.0",
     "react-apollo": "^2.5.4",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-easy-grid": "^0.2.1",
+    "react-native-ratings": "^6.3.1",
     "react-native-star-rating": "^1.1.0",
     "react-navigation": "^3.8.1"
   },

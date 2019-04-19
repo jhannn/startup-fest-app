@@ -1,5 +1,3 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import HomeScreen from './conteiners/HomeScreen';
@@ -11,11 +9,7 @@ const AppStackNavigator = createStackNavigator({
     Startup: StartupScreen,
     Ranking: RankingScreen
 }, {
-        navigationOptions: {
-            headerTitle: 'The Startup Fest'
-        }
+        initialRouteName: "Home"
     })
 
-const Main = createAppContainer(AppStackNavigator);
-
-export default Main;
+export default createAppContainer(AppStackNavigator);
