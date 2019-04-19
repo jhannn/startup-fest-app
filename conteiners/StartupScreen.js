@@ -118,11 +118,11 @@ export default class StartupScreen extends Component {
       'Quer realmente adicionar o voto?',
       [
         {
-          text: 'Cancel',
+          text: 'Não',
           onPress: () => { },
           style: 'cancel',
         },
-        { text: 'OK', onPress: () => this.addVote() },
+        { text: 'Sim', onPress: () => this.addVote() },
       ],
       { cancelable: false },
     );
@@ -133,7 +133,7 @@ export default class StartupScreen extends Component {
       <Container style={{ marginTop: Constants.statusBarHeight }}>
         <SpinnerOverlay
           visible={this.state.loading}
-          textContent={'Loading...'}
+          textContent={'Carregando...'}
           textStyle={styles.spinnerOverlay}
         />
         <Header style={styles.header}>

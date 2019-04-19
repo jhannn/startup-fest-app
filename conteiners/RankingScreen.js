@@ -56,13 +56,13 @@ export default class RankingScreen extends Component {
     let resultDevelop = {};
     if (this.state.startupRankingProposal.length > 0) {
       resultProposal = this.state.startupRankingProposal.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={'porposal' + startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} ranking={this.state.startupRankingProposal.indexOf(startup)+1}/>
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} ranking={this.state.startupRankingProposal.indexOf(startup)+1}/>
       })
       resultPitch = this.state.startupRankingPitch.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={'pitch' + startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} ranking={this.state.startupRankingPitch.indexOf(startup)+1}/>
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} ranking={this.state.startupRankingPitch.indexOf(startup)+1}/>
       })
       resultDevelop = this.state.startupRankingDevelop.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={'develop' + startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} ranking={this.state.startupRankingDevelop.indexOf(startup)+1}/>
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} ranking={this.state.startupRankingDevelop.indexOf(startup)+1}/>
       })
     } else if (this.state.startupRankingProposal.length == 0 && this.state.loading == false) {
       resultProposal = <CardItem><Body><Text> Não existe votação confirmada para Proposta!</Text></Body></CardItem>
