@@ -2,27 +2,12 @@ import React, { Component } from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 import { Container, Header, Body, Footer, Title, Button, Card, CardItem, Content, Icon, Spinner, H3 } from "native-base";
 import { Constants } from "expo";
-import { db } from './config';
 import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
-const ALLSTARTUPS_QUERY = gql`
-query GetAllStartups {
-  allStartups {
-    name
-    teamCount
-    description
-    imageUrl
-    annualReceipt
-    segment_id
-    Segment {
-      name
-      code
-    }
-  }
-}
-`;
+import { db } from './config';
+import styles from './styles';
+import ALLSTARTUPS_QUERY from './queryApollo';
 
 export default class HomeScreen extends Component {
   constructor(props) {
@@ -53,14 +38,14 @@ export default class HomeScreen extends Component {
         <SpinnerOverlay
           visible={this.state.loading}
           textContent={'Loading...'}
-          textStyle={{color: '#FFF'}}
+          textStyle={styles.spinnerOverlay}
         />
-        <Header style={{ backgroundColor: "#3299CC" }}>
-          <Body style={{ alignItems: "center", justifyContent: "center" }}>
+        <Header style={styles.header}>
+          <Body style={styles.centerTitle}>
             <Title>Escolha sua Startup!</Title>
           </Body>
         </Header>
-        <Content padder contentContainerStyle={{ paddingTop: '5%', paddingBottom: '5%', paddingLeft: '15%', paddingRight: '15%' }}>
+        <Content padder contentContainerStyle={styles.content}>
           <Query query={ALLSTARTUPS_QUERY}>
             {({ data, error, loading }) => {
               if (error || loading) {
@@ -69,14 +54,14 @@ export default class HomeScreen extends Component {
               return data.allStartups.map(startup => (
                 <Card key={startup.segment_id}>
                   <TouchableOpacity onPress={() => this.props.navigation.navigate('Startup', { startup: startup })}>
-                    <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
+                    <CardItem style={styles.centerElement}>
                       <Image
                         source={{ uri: startup.imageUrl }}
-                        style={{ height: 100, width: 100 }}
+                        style={styles.image}
                       />
                     </CardItem>
                     <CardItem>
-                      <Body style={{ flexDirection: "row", justifyContent: "center" }}>
+                      <Body style={styles.centerElement}>
                         <H3>{startup.name}</H3>
                       </Body>
                     </CardItem>
@@ -86,9 +71,9 @@ export default class HomeScreen extends Component {
             }}
           </Query>
         </Content>
-        <Footer style={{ backgroundColor: "#38B0DE" }}>
-          <Button onPress={() => this.feedData()} style={{ height: 70, width: 70, bottom: 20, borderWidth: 1, borderColor: 'lightgrey', borderRadius: 35, backgroundColor: '#f5f5f5', justifyContent: "center" }}>
-            <Icon name='trophy' style={{ color: 'darkgrey' }} />
+        <Footer style={styles.footer}>
+          <Button onPress={() => this.feedData()} style={styles.buttonHomeScreen}>
+            <Icon name='trophy' style={styles.icon} />
           </Button>
         </Footer>
       </Container>

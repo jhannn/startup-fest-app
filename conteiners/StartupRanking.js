@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Text, Image } from 'react-native';
 import StarRating from 'react-native-star-rating';
 import { CardItem, Left, Body, Right } from 'native-base';
+
+import styles from './styles';
+
 const STAR_IMAGE = require('../images/empty-star.png');
 const STAR_FULL_IMAGE = require('../images/full-star.png');
 const STAR_HALF_IMAGE = require('../images/half-star-black-white.png');
@@ -11,10 +14,10 @@ export default class StartupRanking extends Component {
         return (
             <CardItem key={this.props.keyval}>
                 <Left>
-                    <Text style={{paddingRight: 10}}>{this.props.ranking}º</Text>
+                    <Text style={styles.textStartup}>{this.props.ranking}º</Text>
                     <Image
                         source={{ uri: this.props.imageUrl }}
-                        style={{ width: 50, height: 50 }}
+                        style={styles.imageRanking}
                     />
                 </Left>
                 <Body>

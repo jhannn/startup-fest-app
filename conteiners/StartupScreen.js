@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Text, Image, Alert } from 'react-native';
-import { db } from './config';
 import StarRating from 'react-native-star-rating';
 import { Container, Card, Content, CardItem, Left, Right, Body, Header, Title, Icon, Button, H3, Spinner } from 'native-base';
 import { Constants } from "expo";
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
+
+import { db } from './config';
+import styles from './styles';
 
 const STAR_IMAGE = require('../images/empty-star.png');
 const STAR_FULL_IMAGE = require('../images/full-star.png');
@@ -132,9 +134,9 @@ export default class StartupScreen extends Component {
         <SpinnerOverlay
           visible={this.state.loading}
           textContent={'Loading...'}
-          textStyle={{ color: '#FFF' }}
+          textStyle={styles.spinnerOverlay}
         />
-        <Header style={{ backgroundColor: "#3299CC" }}>
+        <Header style={styles.header}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
               <Icon name='arrow-back' />
@@ -152,42 +154,42 @@ export default class StartupScreen extends Component {
         <Content padder>
           <Card>
             <CardItem>
-              <Body style={{ flexDirection: "row", justifyContent: "center" }}>
+              <Body style={styles.centerElement}>
                 <Image
                   source={{ uri: this.state.startup.imageUrl }}
-                  style={{ width: 100, height: 100 }}
+                  style={styles.image}
                 />
               </Body>
             </CardItem>
             <CardItem>
-              <Body style={{ flexDirection: "row", justifyContent: "center" }}>
+              <Body style={styles.centerElement}>
                 <Text>{this.state.startup.name}</Text>
               </Body>
             </CardItem>
             <CardItem>
               <Body>
-                <Text style={{ textAlign: "justify" }}>{this.state.startup.description}</Text>
+                <Text>{this.state.startup.description}</Text>
               </Body>
             </CardItem>
             <CardItem>
-              <Left style={{ flexDirection: "row", justifyContent: "center" }}>
+              <Left style={styles.centerElement}>
                 <Text>Qtd de Participantes:</Text>
                 <Text>{this.state.startup.teamCount}</Text>
               </Left>
-              <Body style={{ flexDirection: "row", justifyContent: "center" }}>
+              <Body style={styles.centerElement}>
                 <Text>Receita Anual:</Text>
                 <Text>{this.state.startup.annualReceipt}</Text>
               </Body>
             </CardItem>
           </Card>
           <Card>
-            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
-              <H3 style={{ flexDirection: "row", justifyContent: "center" }}>Faça sua votação!</H3>
+            <CardItem header style={styles.centerElement}>
+              <H3>Faça sua votação!</H3>
             </CardItem>
-            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
+            <CardItem header style={styles.centerElement}>
               <Text>Proposta</Text>
             </CardItem>
-            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
+            <CardItem style={styles.centerElement}>
               <StarRating
                 emptyStar={STAR_IMAGE}
                 fullStar={STAR_FULL_IMAGE}
@@ -198,10 +200,10 @@ export default class StartupScreen extends Component {
                 selectedStar={(rating) => this.onStarRatingPress(rating, 'proposal')}
               />
             </CardItem>
-            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
+            <CardItem header style={styles.centerElement}>
               <Text>Apresentação / Pitch</Text>
             </CardItem>
-            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
+            <CardItem style={styles.centerElement}>
               <StarRating
                 emptyStar={STAR_IMAGE}
                 fullStar={STAR_FULL_IMAGE}
@@ -212,10 +214,10 @@ export default class StartupScreen extends Component {
                 selectedStar={(rating) => this.onStarRatingPress(rating, 'pitch')}
               />
             </CardItem>
-            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
+            <CardItem header style={styles.centerElement}>
               <Text>Desenvolvimento</Text>
             </CardItem>
-            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
+            <CardItem style={styles.centerElement}>
               <StarRating
                 emptyStar={STAR_IMAGE}
                 fullStar={STAR_FULL_IMAGE}
@@ -226,10 +228,10 @@ export default class StartupScreen extends Component {
                 selectedStar={(rating) => this.onStarRatingPress(rating, 'develop')}
               />
             </CardItem>
-            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
-              <Button iconRight info onPress={() => this.confirmAddVote()} style={{ paddingLeft: 10 }}>
+            <CardItem style={styles.centerElement}>
+              <Button iconRight info onPress={() => this.confirmAddVote()} style={styles.iconRight}>
                 <Text>Enviar voto</Text>
-                <Icon name='send' style={{ paddingLeft: 10 }} />
+                <Icon name='send' style={styles.iconRight} />
               </Button>
             </CardItem>
           </Card>

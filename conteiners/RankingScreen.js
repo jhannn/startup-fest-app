@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
-import StartupRanking from './StartupRanking';
 import { Container, Button, Card, Content, CardItem, Body, Header, Title, Right, Icon, Left, H3 } from 'native-base';
 import { Constants } from "expo";
+
+import styles from './styles';
+import StartupRanking from './StartupRanking';
 
 export default class RankingScreen extends Component {
   constructor(props) {
@@ -74,7 +76,7 @@ export default class RankingScreen extends Component {
 
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-      <Header style={{backgroundColor:"#3299CC"}}>
+      <Header style={styles.header}>
         <Left />
         <Body>
           <Title>Resultados</Title>
@@ -86,15 +88,15 @@ export default class RankingScreen extends Component {
         </Right>
       </Header>
         <Content padder>
-          <H3 style={{marginTop:10, marginBottom:10}}>Proposta</H3>
+          <H3 style={styles.hRanking}>Proposta</H3>
           <Card>
             {resultProposal}
           </Card>
-          <H3 style={{marginTop:10, marginBottom:10}}>Apresentação / Pitch</H3>
+          <H3 style={styles.hRanking}>Apresentação / Pitch</H3>
           <Card>
             {resultPitch}
           </Card>
-          <H3 style={{marginTop:10, marginBottom:10}}>Desenvolvimento</H3>
+          <H3 style={styles.hRanking}>Desenvolvimento</H3>
           <Card>
             {resultDevelop}
           </Card>
