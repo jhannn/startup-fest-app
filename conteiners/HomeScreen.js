@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
-import { Container, Header, Body, Footer, FooterTab, Title, Button } from "native-base";
-import { Grid, Row } from "react-native-easy-grid";
+import { StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { Container, Header, Body, Footer, FooterTab, Title, Button, Card, CardItem, Content, Icon, Spinner, H3 } from "native-base";
 import { Constants } from "expo";
 import { db } from './config';
-
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
@@ -42,7 +40,7 @@ export default class HomeScreen extends Component {
         let data = doc.val();
         allstartups.push(data);
       })
-      return  this.props.navigation.navigate('Ranking', {allstartups: allstartups});
+      return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
     })
   }
 
@@ -57,35 +55,36 @@ export default class HomeScreen extends Component {
             <Title>Escolha sua Startup!</Title>
           </Body>
         </Header>
-        <Grid style={{
-          alignItems: "center"
-        }}>
-          <Row>
-            <ScrollView>
-              <Query query={ALLSTARTUPS_QUERY}>
-                {({ data, error, loading }) => {
-                  if (error || loading) {
-                    return <ActivityIndicator size="large" color="#0000ff" />;
-                  }
-                  return data.allStartups.map(startup => (
-                    <View key={startup.segment_id}>
-                      <TouchableOpacity onPress={() => this.props.navigation.navigate('Startup', { startup: startup })}>
-                        <Image
-                          source={{ uri: startup.imageUrl }}
-                          style={{ width: 80, height: 80 }}
-                        />
-                        <Text>{startup.name}</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ))
-                }}
-              </Query>
-            </ScrollView>
-          </Row>
-        </Grid>
+        <Content padder contentContainerStyle={{ paddingTop: '5%', paddingBottom: '5%', paddingLeft: '15%', paddingRight: '15%' }}>
+          <Query query={ALLSTARTUPS_QUERY}>
+            {({ data, error, loading }) => {
+              if (error || loading) {
+                return <Spinner color="blue" />;
+              }
+              return data.allStartups.map(startup => (
+                <Card key={startup.segment_id}>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('Startup', { startup: startup })}>
+                    <CardItem >
+                      <Image
+                        source={{ uri: startup.imageUrl }}
+                        style={{ height: 100, width: 100 }}
+                      />
+                    </CardItem>
+                    <CardItem>
+                      <Body>
+                        <H3>{startup.name}</H3>
+                      </Body>
+                    </CardItem>
+                  </TouchableOpacity>
+                </Card>
+              ))
+            }}
+          </Query>
+        </Content>
         <Footer>
           <FooterTab>
             <Button full onPress={() => this.feedData()}>
+              <Icon name='trophy' />
               <Text>Ranking</Text>
             </Button>
           </FooterTab>

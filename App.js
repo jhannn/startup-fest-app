@@ -3,13 +3,15 @@ import ApolloClient from 'apollo-client';
 import { HttpLink, InMemoryCache } from 'apollo-client-preset';
 import { ApolloProvider } from 'react-apollo';
 import { AppLoading } from "expo";
+import ignoreWarnings from 'ignore-warnings';
 
-import Main from './Main';
+import Navigation from './Navigation';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = { loading: true };
+    ignoreWarnings(['Setting a timer']);
   }
 
   async componentWillMount() {
@@ -26,7 +28,7 @@ export default class App extends Component {
     }
     return (
       <ApolloProvider client={client}>
-        <Main />
+        <Navigation />
       </ApolloProvider>
     );
   }

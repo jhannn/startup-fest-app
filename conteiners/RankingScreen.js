@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import StartupRanking from './StartupRanking';
-import { Container, Footer, FooterTab, Button } from 'native-base';
-import { Grid, Row } from 'react-native-easy-grid';
+import { Container, Button, Card, Content, CardItem, Body, Header, Title, Right, Icon, Left, H3 } from 'native-base';
 import { Constants } from "expo";
 
 export default class RankingScreen extends Component {
@@ -17,7 +16,7 @@ export default class RankingScreen extends Component {
   }
 
   static navigationOptions = {
-    title: 'Resultados'
+    header: null
   }
 
   componentWillMount() {
@@ -55,54 +54,51 @@ export default class RankingScreen extends Component {
     let resultDevelop = {};
     if (this.state.startupRankingProposal.length > 0) {
       resultProposal = this.state.startupRankingProposal.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} />
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} ranking={this.state.startupRankingProposal.indexOf(startup)+1}/>
       })
       resultPitch = this.state.startupRankingPitch.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} />
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} ranking={this.state.startupRankingPitch.indexOf(startup)+1}/>
       })
       resultDevelop = this.state.startupRankingDevelop.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} />
+        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} ranking={this.state.startupRankingDevelop.indexOf(startup)+1}/>
       })
     } else if (this.state.startupRankingProposal.length == 0 && this.state.loading == false) {
-      resultProposal = <Text> Não existe votação confirmada para Proposta!</Text>
-      resultPitch = <Text> Não existe votação confirmada para Proposta!</Text>
-      resultDevelop = <Text> Não existe votação confirmada para Proposta!</Text>
+      resultProposal = <CardItem><Body><Text> Não existe votação confirmada para Proposta!</Text></Body></CardItem>
+      resultPitch = <CardItem><Body><Text> Não existe votação confirmada para Proposta!</Text></Body></CardItem>
+      resultDevelop = <CardItem><Body><Text> Não existe votação confirmada para Proposta!</Text></Body></CardItem>
     } else {
-      resultProposal = <ActivityIndicator size="small" color="#0000ff" />;
-      resultPitch = <ActivityIndicator size="small" color="#0000ff" />;
-      resultDevelop = <ActivityIndicator size="small" color="#0000ff" />;
+      resultProposal = <Spinner color="blue" />;
+      resultPitch = <Spinner color="blue" />;
+      resultDevelop = <Spinner color="blue" />;
     }
 
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-        <Grid style={{ alignItems: "center" }}>
-          <Row>
-            <View>
-              <ScrollView>
-                <Text>Resultados</Text>
-                <Text>Proposta</Text>
-                <ScrollView>
-                  {resultProposal}
-                </ScrollView>
-                <Text>Apresentação / Pitch</Text>
-                <ScrollView>
-                  {resultPitch}
-                </ScrollView>
-                <Text>Desenvolvimento</Text>
-                <ScrollView>
-                  {resultDevelop}
-                </ScrollView>
-              </ScrollView>
-            </View>
-          </Row>
-        </Grid>
-        <Footer>
-          <FooterTab>
-            <Button full onPress={() => this.props.navigation.navigate('Home')}>
-              <Text>Home</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
+      <Header>
+        <Left />
+        <Body>
+          <Title>Resultados</Title>
+        </Body>
+        <Right>
+          <Button transparent onPress={() => this.props.navigation.navigate('Home')}>
+          <Icon name='home'/>
+          </Button>
+        </Right>
+      </Header>
+        <Content padder>
+          <H3>Proposta</H3>
+          <Card transparent>
+            {resultProposal}
+          </Card>
+          <H3>Apresentação / Pitch</H3>
+          <Card transparent>
+            {resultPitch}
+          </Card>
+          <H3>Desenvolvimento</H3>
+          <Card transparent>
+            {resultDevelop}
+          </Card>
+        </Content>
       </Container>
     );
   }
