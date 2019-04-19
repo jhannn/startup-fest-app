@@ -48,7 +48,7 @@ export default class StartupScreen extends Component {
       db.ref('startup/' + startupFirebase.idStartup.toString()).update({
         ratingProposal: this.state.starCountProposal + startupFirebase.ratingProposal,
         ratingPitch: this.state.starCountPitch + startupFirebase.ratingPitch,
-        ratingtDevelop: this.state.starCountDevelop + startupFirebase.ratingDevelop,
+        ratingDevelop: this.state.starCountDevelop + startupFirebase.ratingDevelop,
         countVotes: startupFirebase.countVotes + 1
       }).then(() => {
         startupFirebase.ratingProposal = this.state.starCountProposal + startupFirebase.ratingProposal;
@@ -110,29 +110,29 @@ export default class StartupScreen extends Component {
     })
   }
 
-  confirmAddVote(){
+  confirmAddVote() {
     Alert.alert(
       'Adicionar Voto',
       'Quer realmente adicionar o voto?',
       [
         {
           text: 'Cancel',
-          onPress: () => {},
+          onPress: () => { },
           style: 'cancel',
         },
-        {text: 'OK', onPress: () => this.addVote()},
+        { text: 'OK', onPress: () => this.addVote() },
       ],
-      {cancelable: false},
+      { cancelable: false },
     );
   }
 
   render() {
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-      <SpinnerOverlay
+        <SpinnerOverlay
           visible={this.state.loading}
           textContent={'Loading...'}
-          textStyle={{color: '#FFF'}}
+          textStyle={{ color: '#FFF' }}
         />
         <Header style={{ backgroundColor: "#3299CC" }}>
           <Left>
