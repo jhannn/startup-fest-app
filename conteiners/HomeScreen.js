@@ -5,6 +5,7 @@ import { Constants } from "expo";
 import { db } from './config';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
 const ALLSTARTUPS_QUERY = gql`
 query GetAllStartups {
@@ -33,7 +34,7 @@ export default class HomeScreen extends Component {
     header: null
   }
 
-  feedData() {
+  async feedData() {
     this.setState({ loading: true });
     db.ref('startup').on('value', (snapshot) => {
       let allstartups = [];
@@ -47,13 +48,15 @@ export default class HomeScreen extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return <Spinner color="blue" />;
-    }
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-        <Header style={{backgroundColor:"#3299CC"}}>
-          <Body style={{alignItems: "center", justifyContent: "center"}}>
+        <SpinnerOverlay
+          visible={this.state.loading}
+          textContent={'Loading...'}
+          textStyle={{color: '#FFF'}}
+        />
+        <Header style={{ backgroundColor: "#3299CC" }}>
+          <Body style={{ alignItems: "center", justifyContent: "center" }}>
             <Title>Escolha sua Startup!</Title>
           </Body>
         </Header>
@@ -83,10 +86,10 @@ export default class HomeScreen extends Component {
             }}
           </Query>
         </Content>
-        <Footer style={{backgroundColor:"#38B0DE"}}>
-            <Button onPress={() => this.feedData()} style={{ height: 70, width: 70, bottom: 20, borderWidth: 1, borderColor: 'lightgrey', borderRadius: 35, backgroundColor: '#f5f5f5', justifyContent: "center" }}>
-              <Icon name='trophy' style={{ color: 'darkgrey'}} />
-            </Button>
+        <Footer style={{ backgroundColor: "#38B0DE" }}>
+          <Button onPress={() => this.feedData()} style={{ height: 70, width: 70, bottom: 20, borderWidth: 1, borderColor: 'lightgrey', borderRadius: 35, backgroundColor: '#f5f5f5', justifyContent: "center" }}>
+            <Icon name='trophy' style={{ color: 'darkgrey' }} />
+          </Button>
         </Footer>
       </Container>
     );

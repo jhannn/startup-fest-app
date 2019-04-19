@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Text, Image } from 'react-native';
+import { Text, Image, Alert } from 'react-native';
 import { db } from './config';
 import StarRating from 'react-native-star-rating';
 import { Container, Card, Content, CardItem, Left, Right, Body, Header, Title, Icon, Button, H3, Spinner } from 'native-base';
 import { Constants } from "expo";
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
+
 const STAR_IMAGE = require('../images/empty-star.png');
 const STAR_FULL_IMAGE = require('../images/full-star.png');
 
@@ -40,9 +42,8 @@ export default class StartupScreen extends Component {
     }
   }
 
-  addVoteArray(allstartups, startupFirebase, existInFirebase) {
+  async addVoteArray(allstartups, startupFirebase, existInFirebase) {
     let objectAux = {};
-    console.log("Entrou")
     if (existInFirebase) {
       db.ref('startup/' + startupFirebase.idStartup.toString()).update({
         ratingProposal: this.state.starCountProposal + startupFirebase.ratingProposal,
@@ -58,7 +59,8 @@ export default class StartupScreen extends Component {
         this.setState({ loading: false });
         return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
       }).catch((error) => {
-        console.log('error ', error)
+        console.log('error ', error);
+        alert('Aconteceu algo errado, repita a operação');
       })
     } else {
       db.ref('startup/' + this.state.startup.segment_id.toString()).set({
@@ -83,12 +85,13 @@ export default class StartupScreen extends Component {
         this.setState({ loading: false });
         return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
       }).catch((error) => {
-        console.log('error ', error)
+        console.log('error ', error);
+        alert('Aconteceu algo errado, repita a operação');
       })
     }
   }
 
-  addVote() {
+  async addVote() {
     let startupFirebase = {};
     let existInFirebase = false;
     let allstartups = [];
@@ -97,7 +100,6 @@ export default class StartupScreen extends Component {
       snapshot.forEach((doc) => {
         let data = doc.val();
         if (data.idStartup.toString() == this.state.startup.segment_id.toString()) {
-          console.log('Existe');
           startupFirebase = data;
           existInFirebase = true;
         } else {
@@ -108,12 +110,30 @@ export default class StartupScreen extends Component {
     })
   }
 
+  confirmAddVote(){
+    Alert.alert(
+      'Adicionar Voto',
+      'Quer realmente adicionar o voto?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => this.addVote()},
+      ],
+      {cancelable: false},
+    );
+  }
+
   render() {
-    if (this.state.loading) {
-      return <Spinner color="blue" />;
-    }
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
+      <SpinnerOverlay
+          visible={this.state.loading}
+          textContent={'Loading...'}
+          textStyle={{color: '#FFF'}}
+        />
         <Header style={{ backgroundColor: "#3299CC" }}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
@@ -207,7 +227,7 @@ export default class StartupScreen extends Component {
               />
             </CardItem>
             <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
-              <Button iconRight info onPress={() => this.addVote()} style={{ paddingLeft: 10 }}>
+              <Button iconRight info onPress={() => this.confirmAddVote()} style={{ paddingLeft: 10 }}>
                 <Text>Enviar voto</Text>
                 <Icon name='send' style={{ paddingLeft: 10 }} />
               </Button>
