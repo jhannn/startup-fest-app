@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 import StartupRanking from './StartupRanking';
 import { Container, Button, Card, Content, CardItem, Body, Header, Title, Right, Icon, Left, H3 } from 'native-base';
 import { Constants } from "expo";
@@ -54,13 +54,13 @@ export default class RankingScreen extends Component {
     let resultDevelop = {};
     if (this.state.startupRankingProposal.length > 0) {
       resultProposal = this.state.startupRankingProposal.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} ranking={this.state.startupRankingProposal.indexOf(startup)+1}/>
+        return <StartupRanking key={startup.idStartup} keyval={'porposal' + startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingProposal} ranking={this.state.startupRankingProposal.indexOf(startup)+1}/>
       })
       resultPitch = this.state.startupRankingPitch.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} ranking={this.state.startupRankingPitch.indexOf(startup)+1}/>
+        return <StartupRanking key={startup.idStartup} keyval={'pitch' + startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingPitch} ranking={this.state.startupRankingPitch.indexOf(startup)+1}/>
       })
       resultDevelop = this.state.startupRankingDevelop.map((startup) => {
-        return <StartupRanking key={startup.idStartup} keyval={startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} ranking={this.state.startupRankingDevelop.indexOf(startup)+1}/>
+        return <StartupRanking key={startup.idStartup} keyval={'develop' + startup.idStartup} name={startup.nameStartup} imageUrl={startup.imageUrl} starRating={startup.rankingDevelop} ranking={this.state.startupRankingDevelop.indexOf(startup)+1}/>
       })
     } else if (this.state.startupRankingProposal.length == 0 && this.state.loading == false) {
       resultProposal = <CardItem><Body><Text> Não existe votação confirmada para Proposta!</Text></Body></CardItem>
@@ -74,7 +74,7 @@ export default class RankingScreen extends Component {
 
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-      <Header>
+      <Header style={{backgroundColor:"#3299CC"}}>
         <Left />
         <Body>
           <Title>Resultados</Title>
@@ -86,16 +86,16 @@ export default class RankingScreen extends Component {
         </Right>
       </Header>
         <Content padder>
-          <H3>Proposta</H3>
-          <Card transparent>
+          <H3 style={{marginTop:10, marginBottom:10}}>Proposta</H3>
+          <Card>
             {resultProposal}
           </Card>
-          <H3>Apresentação / Pitch</H3>
-          <Card transparent>
+          <H3 style={{marginTop:10, marginBottom:10}}>Apresentação / Pitch</H3>
+          <Card>
             {resultPitch}
           </Card>
-          <H3>Desenvolvimento</H3>
-          <Card transparent>
+          <H3 style={{marginTop:10, marginBottom:10}}>Desenvolvimento</H3>
+          <Card>
             {resultDevelop}
           </Card>
         </Content>
@@ -103,10 +103,3 @@ export default class RankingScreen extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff'
-  }
-});

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
-import { Container, Header, Body, Footer, FooterTab, Title, Button, Card, CardItem, Content, Icon, Spinner, H3 } from "native-base";
+import { Image, TouchableOpacity } from 'react-native';
+import { Container, Header, Body, Footer, Title, Button, Card, CardItem, Content, Icon, Spinner, H3 } from "native-base";
 import { Constants } from "expo";
 import { db } from './config';
 import { Query } from 'react-apollo';
@@ -26,6 +26,7 @@ query GetAllStartups {
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
+    this.state = { loading: false };
   }
 
   static navigationOptions = {
@@ -33,25 +34,26 @@ export default class HomeScreen extends Component {
   }
 
   feedData() {
-    console.log("chegou");
+    this.setState({ loading: true });
     db.ref('startup').on('value', (snapshot) => {
       let allstartups = [];
       snapshot.forEach((doc) => {
         let data = doc.val();
         allstartups.push(data);
       })
+      this.setState({ loading: false })
       return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
     })
   }
 
   render() {
+    if (this.state.loading) {
+      return <Spinner color="blue" />;
+    }
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-        <Header>
-          <Body style={{
-            alignItems: "center",
-            justifyContent: "center"
-          }}>
+        <Header style={{backgroundColor:"#3299CC"}}>
+          <Body style={{alignItems: "center", justifyContent: "center"}}>
             <Title>Escolha sua Startup!</Title>
           </Body>
         </Header>
@@ -64,14 +66,14 @@ export default class HomeScreen extends Component {
               return data.allStartups.map(startup => (
                 <Card key={startup.segment_id}>
                   <TouchableOpacity onPress={() => this.props.navigation.navigate('Startup', { startup: startup })}>
-                    <CardItem >
+                    <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
                       <Image
                         source={{ uri: startup.imageUrl }}
                         style={{ height: 100, width: 100 }}
                       />
                     </CardItem>
                     <CardItem>
-                      <Body>
+                      <Body style={{ flexDirection: "row", justifyContent: "center" }}>
                         <H3>{startup.name}</H3>
                       </Body>
                     </CardItem>
@@ -81,22 +83,12 @@ export default class HomeScreen extends Component {
             }}
           </Query>
         </Content>
-        <Footer>
-          <FooterTab>
-            <Button full onPress={() => this.feedData()}>
-              <Icon name='trophy' />
-              <Text>Ranking</Text>
+        <Footer style={{backgroundColor:"#38B0DE"}}>
+            <Button onPress={() => this.feedData()} style={{ height: 70, width: 70, bottom: 20, borderWidth: 1, borderColor: 'lightgrey', borderRadius: 35, backgroundColor: '#f5f5f5', justifyContent: "center" }}>
+              <Icon name='trophy' style={{ color: 'darkgrey'}} />
             </Button>
-          </FooterTab>
         </Footer>
       </Container>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff'
-  }
-});

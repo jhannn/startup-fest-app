@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, Image } from 'react-native';
+import { Text, Image } from 'react-native';
 import { db } from './config';
 import StarRating from 'react-native-star-rating';
-import { Container, Card, Content, CardItem, Left, Right, Body, Header, Title, Icon, Button, H2, H3 } from 'native-base';
+import { Container, Card, Content, CardItem, Left, Right, Body, Header, Title, Icon, Button, H3, Spinner } from 'native-base';
 import { Constants } from "expo";
 const STAR_IMAGE = require('../images/empty-star.png');
 const STAR_FULL_IMAGE = require('../images/full-star.png');
@@ -15,7 +15,8 @@ export default class StartupScreen extends Component {
       startup: this.props.navigation.state.params.startup,
       starCountProposal: 1,
       starCountPitch: 1,
-      starCountDevelop: 1
+      starCountDevelop: 1,
+      loading: false
     }
   }
 
@@ -39,34 +40,23 @@ export default class StartupScreen extends Component {
     }
   }
 
-  addVote() {
-    let startupFirebase = {};
-    let existInFirebase = false;
-    let allstartups = [];
+  addVoteArray(allstartups, startupFirebase, existInFirebase) {
     let objectAux = {};
-    db.ref('startup').on('value', (snapshot) => {
-      snapshot.forEach((doc) => {
-        let data = doc.val();
-        if (data.idStartup.toString() == this.state.startup.segment_id.toString()) {
-          startupFirebase = data;
-          existInFirebase = true;
-        } else {
-          allstartups.push(data);
-        }
-      })
-    })
+    console.log("Entrou")
     if (existInFirebase) {
       db.ref('startup/' + startupFirebase.idStartup.toString()).update({
         ratingProposal: this.state.starCountProposal + startupFirebase.ratingProposal,
         ratingPitch: this.state.starCountPitch + startupFirebase.ratingPitch,
         ratingtDevelop: this.state.starCountDevelop + startupFirebase.ratingDevelop,
         countVotes: startupFirebase.countVotes + 1
-      }).then((data) => {
+      }).then(() => {
         startupFirebase.ratingProposal = this.state.starCountProposal + startupFirebase.ratingProposal;
         startupFirebase.ratingPitch = this.state.starCountPitch + startupFirebase.ratingPitch;
-        startupFirebase.ratingtDevelop = this.state.starCountDevelop + startupFirebase.ratingDevelop;
+        startupFirebase.ratingDevelop = this.state.starCountDevelop + startupFirebase.ratingDevelop;
         startupFirebase.countVotes = startupFirebase.countVotes + 1;
-        allstartups.push(data);
+        allstartups.push(startupFirebase);
+        this.setState({ loading: false });
+        return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
       }).catch((error) => {
         console.log('error ', error)
       })
@@ -79,7 +69,7 @@ export default class StartupScreen extends Component {
         ratingPitch: this.state.starCountPitch,
         ratingDevelop: this.state.starCountDevelop,
         countVotes: 1.0
-      }).then((data) => {
+      }).then(() => {
         objectAux = {
           idStartup: this.state.startup.segment_id,
           nameStartup: this.state.startup.name,
@@ -89,18 +79,42 @@ export default class StartupScreen extends Component {
           ratingDevelop: this.state.starCountDevelop,
           countVotes: 1.0
         }
-        allstartups.push(data);
+        allstartups.push(objectAux);
+        this.setState({ loading: false });
+        return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
       }).catch((error) => {
         console.log('error ', error)
       })
     }
-    return this.props.navigation.navigate('Ranking', { allstartups: allstartups });
+  }
+
+  addVote() {
+    let startupFirebase = {};
+    let existInFirebase = false;
+    let allstartups = [];
+    this.setState({ loading: true });
+    db.ref('startup').once('value', (snapshot) => {
+      snapshot.forEach((doc) => {
+        let data = doc.val();
+        if (data.idStartup.toString() == this.state.startup.segment_id.toString()) {
+          console.log('Existe');
+          startupFirebase = data;
+          existInFirebase = true;
+        } else {
+          allstartups.push(data);
+        }
+      })
+      return this.addVoteArray(allstartups, startupFirebase, existInFirebase)
+    })
   }
 
   render() {
+    if (this.state.loading) {
+      return <Spinner color="blue" />;
+    }
     return (
       <Container style={{ marginTop: Constants.statusBarHeight }}>
-        <Header>
+        <Header style={{ backgroundColor: "#3299CC" }}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
               <Icon name='arrow-back' />
@@ -116,42 +130,44 @@ export default class StartupScreen extends Component {
           </Right>
         </Header>
         <Content padder>
-          <Card transparent>
+          <Card>
             <CardItem>
-              <Left />
-              <Body>
+              <Body style={{ flexDirection: "row", justifyContent: "center" }}>
                 <Image
                   source={{ uri: this.state.startup.imageUrl }}
                   style={{ width: 100, height: 100 }}
                 />
               </Body>
-              <Right />
             </CardItem>
             <CardItem>
-              <Left />
-              <Body>
+              <Body style={{ flexDirection: "row", justifyContent: "center" }}>
                 <Text>{this.state.startup.name}</Text>
               </Body>
-              <Right />
             </CardItem>
             <CardItem>
-              <Text>{this.state.startup.description}</Text>
+              <Body>
+                <Text style={{ textAlign: "justify" }}>{this.state.startup.description}</Text>
+              </Body>
             </CardItem>
             <CardItem>
-              <Left>
+              <Left style={{ flexDirection: "row", justifyContent: "center" }}>
                 <Text>Qtd de Participantes:</Text>
                 <Text>{this.state.startup.teamCount}</Text>
               </Left>
-              <Body>
+              <Body style={{ flexDirection: "row", justifyContent: "center" }}>
                 <Text>Receita Anual:</Text>
                 <Text>{this.state.startup.annualReceipt}</Text>
               </Body>
             </CardItem>
-            <H3>Faça sua votação!</H3>
-            <CardItem header>
+          </Card>
+          <Card>
+            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
+              <H3 style={{ flexDirection: "row", justifyContent: "center" }}>Faça sua votação!</H3>
+            </CardItem>
+            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
               <Text>Proposta</Text>
             </CardItem>
-            <CardItem>
+            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
               <StarRating
                 emptyStar={STAR_IMAGE}
                 fullStar={STAR_FULL_IMAGE}
@@ -162,10 +178,10 @@ export default class StartupScreen extends Component {
                 selectedStar={(rating) => this.onStarRatingPress(rating, 'proposal')}
               />
             </CardItem>
-            <CardItem header>
+            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
               <Text>Apresentação / Pitch</Text>
             </CardItem>
-            <CardItem>
+            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
               <StarRating
                 emptyStar={STAR_IMAGE}
                 fullStar={STAR_FULL_IMAGE}
@@ -176,10 +192,10 @@ export default class StartupScreen extends Component {
                 selectedStar={(rating) => this.onStarRatingPress(rating, 'pitch')}
               />
             </CardItem>
-            <CardItem header>
+            <CardItem header style={{ flexDirection: "row", justifyContent: "center" }}>
               <Text>Desenvolvimento</Text>
             </CardItem>
-            <CardItem>
+            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
               <StarRating
                 emptyStar={STAR_IMAGE}
                 fullStar={STAR_FULL_IMAGE}
@@ -190,7 +206,7 @@ export default class StartupScreen extends Component {
                 selectedStar={(rating) => this.onStarRatingPress(rating, 'develop')}
               />
             </CardItem>
-            <CardItem>
+            <CardItem style={{ flexDirection: "row", justifyContent: "center" }}>
               <Button iconRight info onPress={() => this.addVote()} style={{ paddingLeft: 10 }}>
                 <Text>Enviar voto</Text>
                 <Icon name='send' style={{ paddingLeft: 10 }} />

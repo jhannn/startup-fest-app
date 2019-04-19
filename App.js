@@ -7,7 +7,7 @@ import ignoreWarnings from 'ignore-warnings';
 
 import Navigation from './Navigation';
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = { loading: true };
@@ -39,3 +39,5 @@ const client = new ApolloClient({
   link: new HttpLink({ uri: 'https://startups-project-mytvsxrgeb.now.sh' }),
   cache: new InMemoryCache().restore({}),
 });
+
+export default App;

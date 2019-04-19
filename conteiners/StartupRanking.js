@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { Text, Image } from 'react-native';
 import StarRating from 'react-native-star-rating';
 import { CardItem, Left, Body, Right } from 'native-base';
 const STAR_IMAGE = require('../images/empty-star.png');
@@ -32,7 +32,7 @@ export default class StartupRanking extends Component {
                 />
                 </Body>
                 <Right>
-                    <Text>{this.props.starRating} /5</Text>
+                    <Text>{Number((this.props.starRating).toFixed(1))} /5</Text>
                 </Right>
             </CardItem>
         );
